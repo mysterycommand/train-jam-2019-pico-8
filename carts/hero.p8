@@ -106,7 +106,7 @@ function particle(x, y)
 
   function p.draw()
     circ(p.currPos.x, p.currPos.y, 1, dark_gray)
-    circ(p.currPos.x, p.currPos.y, 8, dark_gray)
+    -- circ(p.currPos.x, p.currPos.y, 8, dark_gray)
   end
 
   return p
