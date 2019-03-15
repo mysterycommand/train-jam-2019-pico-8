@@ -5,29 +5,29 @@ __lua__
 left,right,up,down,fire1,fire2=0,1,2,3,4,5
 black,dark_blue,dark_purple,dark_green,brown,dark_gray,light_gray,white,red,orange,yellow,green,blue,indigo,pink,peach=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 
+taps = {}
+
 function _init()
-  gravity = vec(0, 0.1)
-  p = particle(64, 1)
+  p1 = vec(32, 64)
+  p2 = vec(96, 64)
 end
 
 function _update()
-  update(p)
+  if btn(left, 0) then
+    taps[left] = time()
+    p1.x -= 1
+  end
 end
 
 function _draw()
   cls(light_gray)
-  print(time(),1,1,black)
+  print(time(), 1, 1, black)
 
-  -- legs
-  bone(65, 64, 8, 0.80, dark_blue)
-  bone(63, 64, 8, 0.70, blue)
-
-  -- arms
-  bone(66, 58, 8, 0.85, dark_blue)
-  bone(62, 58, 8, 0.65, blue)
-
-  draw(p)
+  spr(1,p1.x,p1.y)
+  spr(2,p2.x,p2.y)
 end
+
+-- scratch
 
 function vec(x, y)
   return {
@@ -46,28 +46,28 @@ end
 
 function particle(x, y)
   return {
-    currPos = vec(x, y),
-    prevPos = vec(x, y),
+    currpos = vec(x, y),
+    prevpos = vec(x, y),
   }
 end
 
 function update(p)
-  local prevVel = sub(p.currPos, p.prevPos)
-  local currVel = add(prevVel, gravity)
-  local nextPos = add(p.currPos, currVel)
+  local prevvel = sub(p.currpos, p.prevpos)
+  local currvel = add(prevvel, gravity)
+  local nextpos = add(p.currpos, currvel)
 
-  p.prevPos = p.currPos
-  p.currPos = nextPos
+  p.prevpos = p.currpos
+  p.currpos = nextpos
 
-  if p.currPos.y > 127 then
-    p.currPos.y = 0
-    p.prevPos.y = -currVel.y
+  if p.currpos.y > 127 then
+    p.currpos.y = 0
+    p.prevpos.y = -currvel.y
   end
 end
 
 function draw(p)
-  circ(p.currPos.x, p.currPos.y, 4, indigo)
-  pset(p.currPos.x, p.currPos.y, indigo)
+  circ(p.currpos.x, p.currpos.y, 4, indigo)
+  pset(p.currpos.x, p.currpos.y, indigo)
 end
 
 function lerp(a, b, t)
@@ -77,3 +77,13 @@ end
 function bone(x, y, l, a, c)
   line(x, y, x + l * cos(a), y + l * sin(a), c)
 end
+
+__gfx__
+00000000333333338000000800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000300000030800008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00700700300000030080080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00077000300000030008800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00077000300000030008800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00700700300000030080080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000300000030800008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000333333338000000800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
