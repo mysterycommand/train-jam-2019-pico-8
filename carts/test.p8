@@ -24,14 +24,13 @@ function _update()
 
     local t = time()
     add(cors, cocreate(function()
-      while time() - t < 0.2 do
+      while btn(left, 0) or time() - t < 2 do
         yield()
       end
 
       del(btns[left], "tap")
     end))
   end
-
 end
 
 function _draw()
@@ -44,13 +43,17 @@ function _draw()
   print(s,1,1,black)
 
 
+  t = ""
   for cor in all(cors) do
-    if costatus(cor) then
+    t = t .. costatus(cor)
+    if costatus(cor) == "suspended" then
       coresume(cor)
     else
       del(cors, cor)
     end
   end
+
+  print("cors: " .. count(cors), 1, 9, black)
 end
 
 -- scratch
