@@ -12,7 +12,7 @@ codo_init
     07 fullscreen_method 1 // 0 maximized window (linux)  1 borderless desktop-sized window  2 fullscreen
     08 foreground_sleep_ms 5 // number of milliseconds to sleep each frame. Try 10 to conserve battery power
     09 background_sleep_ms 20 // number of milliseconds to sleep each frame when running in the background
-    10 sessions 50 // number of times program has been run
+    10 sessions 54 // number of times program has been run
     11 rmb_key 0 // 0 for none  226 for LALT
     12 emulate_textinput 0 
     13 desktop_path 
@@ -56,12 +56,7 @@ codo_init
   codo_joystick_init
   Reading controller mappings: /Users/matt/Sites/mysterycommand/train-jam-2019-pico-8/sdl_controllers.txt
   searching for joysticks
-    found 1 joysticks
-    Controller 0: X360 Controller
-    Number of Axes: 6
-    Number of Buttons: 15
-    Number of Balls: 0
-    Mapping: 5e040000000000008e02000000000000,X360 Controller,a:b0,b:b1,back:b9,dpdown:b12,dpleft:b13,dpright:b14,dpup:b11,guide:b10,leftshoulder:b4,leftstick:b6,lefttrigger:a2,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b7,righttrigger:a5,rightx:a3,righty:a4,start:b8,x:b2,y:b3,platform:Mac OS X,
+    found 0 joysticks
   ok
 ok
 set app.auto_load_fn /Users/matt/Sites/mysterycommand/train-jam-2019-pico-8/carts/test.p8
