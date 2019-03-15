@@ -15,12 +15,14 @@ function _update()
 end
 
 function _draw()
-  cls(orange)
+  cls(light_gray)
   print(time(),1,1,black)
 
-  bone(65, 64, 8, 0.75, dark_gray)
-  bone(63, 64, 8, 0.70, light_gray)
+  -- legs
+  bone(65, 64, 8, 0.80, dark_blue)
+  bone(63, 64, 8, 0.70, blue)
 
+  -- arms
   bone(66, 58, 8, 0.85, dark_blue)
   bone(62, 58, 8, 0.65, blue)
 
@@ -53,8 +55,14 @@ function update(p)
   local prevVel = sub(p.currPos, p.prevPos)
   local currVel = add(prevVel, gravity)
   local nextPos = add(p.currPos, currVel)
+
   p.prevPos = p.currPos
   p.currPos = nextPos
+
+  if p.currPos.y > 127 then
+    p.currPos.y = 0
+    p.prevPos.y = -currVel.y
+  end
 end
 
 function draw(p)
