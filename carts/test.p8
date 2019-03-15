@@ -13,15 +13,14 @@ function _init()
 end
 
 function _update()
-  if btn(left, 0) then
-    taps[left] = time()
-    p1.x -= 1
-  end
+  taps[left] = btn(left, 0)
 end
 
 function _draw()
   cls(light_gray)
   print(time(), 1, 1, black)
+
+  if (taps[left]) print("left", 1, 9)
 
   spr(1,p1.x,p1.y)
   spr(2,p2.x,p2.y)
