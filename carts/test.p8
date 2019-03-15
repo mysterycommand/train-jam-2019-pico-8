@@ -5,25 +5,28 @@ __lua__
 left,right,up,down,fire1,fire2=0,1,2,3,4,5
 black,dark_blue,dark_purple,dark_green,brown,dark_gray,light_gray,white,red,orange,yellow,green,blue,indigo,pink,peach=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 
-taps = {}
+
 
 function _init()
-  p1 = vec(32, 64)
-  p2 = vec(96, 64)
+  local t = time()
+
+  co = cocreate(function()
+    while time() - t < 2 do
+      print("hello " .. t .. " : " .. time(), 1, 1, black)
+      yield()
+    end
+  end)
 end
 
 function _update()
-  taps[left] = btn(left, 0)
 end
 
 function _draw()
   cls(light_gray)
-  print(time(), 1, 1, black)
 
-  if (taps[left]) print("left", 1, 9)
-
-  spr(1,p1.x,p1.y)
-  spr(2,p2.x,p2.y)
+  if costatus(co) then
+    coresume(co)
+  end
 end
 
 -- scratch
