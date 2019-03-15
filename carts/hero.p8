@@ -18,13 +18,13 @@ function _draw()
   circ(64, 64, 8, green)
   circ(64, 58, 1, dark_gray)
 
-  -- pole(62, 60, 0.70, 4, red)
-  -- pole(62 + 4 * cos(0.70), 60 + 4 * sin(0.70), 0.75, 4, red)
-  limb(62, 60, 0.70, 0.05, red)
-
-  -- pole(66, 60, 0.80, 4, dark_blue)
-  -- pole(66 + 4 * cos(0.80), 60 + 4 * sin(0.80), 0.95, 4, dark_blue)
-  limb(66, 60, 0.80, 0.25, dark_blue)
+  if (flr(time()) % 2 == 0) then
+    limb(62, 60, 0.70, 0.05, red)
+    limb(66, 60, 0.80, 0.15, dark_blue)
+  else
+    limb(65, 60, 0.80, 0.15, red)
+    limb(63, 60, 0.70, 0.05, dark_blue)
+  end
 end
 
 function limb(x, y, angle, bend, color)
