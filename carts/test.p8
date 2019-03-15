@@ -42,15 +42,8 @@ function _draw()
   end
   print(s,1,1,black)
 
-
-  t = ""
   for cor in all(cors) do
-    t = t .. costatus(cor)
-    if costatus(cor) == "suspended" then
-      coresume(cor)
-    else
-      del(cors, cor)
-    end
+    if (not coresume(cor)) del(cors, cor)
   end
 
   print("cors: " .. count(cors), 1, 9, black)
