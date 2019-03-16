@@ -15,22 +15,42 @@ btn_ids = {
 }
 
 btn_states = {
-  up = "up",
-  down = "down",
-  hold = "hold", -- down + time
-  tap = "tap", -- down & up?
-  tap_and_hold = "tap_and_hold",
-  dbl_tap = "dbl_tap",
-  dbl_tap_and_hold = "dbl_tap_and_hold",
+  up = 0,
+  down = 1,
+  tap = 2,
+  hold = 3,
+  tap_and_hold = 4,
+  dbl_tap = 5,
+  dbl_tap_and_hold = 6,
 }
 
-btn_time = {}
-btn_time[left] = { prev = 0, curr = 0, state = btn_states.up }
-btn_time[right] = { prev = 0, curr = 0, state = btn_states.up }
-btn_time[up] = { prev = 0, curr = 0, state = btn_states.up }
-btn_time[down] = { prev = 0, curr = 0, state = btn_states.up }
-btn_time[fire1] = { prev = 0, curr = 0, state = btn_states.up }
-btn_time[fire2] = { prev = 0, curr = 0, state = btn_states.up }
+btns = {}
+btns[left]  = { state = btn_states.up, history = "" }
+btns[right] = { state = btn_states.up, history = "" }
+btns[up]    = { state = btn_states.up, history = "" }
+btns[down]  = { state = btn_states.up, history = "" }
+btns[fire1] = { state = btn_states.up, history = "" }
+btns[fire2] = { state = btn_states.up, history = "" }
+
+tap = {}
+tap["01"] = true
+
+hold = {}
+hold["111111"] = true
+
+tap_and_holds = {}
+tap_and_holds["111112"] = true
+tap_and_holds["111102"] = true
+
+dbl_taps = {}
+dbl_taps["201201"] = true
+dbl_taps["201120"] = true
+dbl_taps["201102"] = true
+dbl_taps["201112"] = true
+
+dbl_tap_and_holds = {}
+dbl_tap_and_holds["111115"] = true
+dbl_tap_and_holds["111105"] = true
 
 -- something for later
 -- if (costatus(co) != "dead") coresume(co)
@@ -44,51 +64,60 @@ co = cocreate(function(die)
   end
 end)
 
-function get_btn_time(btn_id, player_id)
-  if btnp(btn_id, player_id) then
-    btn_time[btn_id].prev = btn_time[btn_id].curr
-    btn_time[btn_id].curr = time()
-  end
+function push_state(btn_id, btn_state)
+  btns[btn_id].history = btns[btn_id].state .. btns[btn_id].history
+  btns[btn_id].state = btn_state
 end
 
-function get_btn_times()
+function query_btns(player_id)
   for btn_id in all(btn_ids) do
-    get_btn_time(btn_id, 0)
+    local h = btns[btn_id].state .. btns[btn_id].history
+    local state
+
+    -- query up or down
+    if btn(btn_id, player_id) then
+      state = btn_states.down
+    else
+      state = btn_states.up
+    end
+
+    -- detect a "tap" (was down, came up)
+    if (tap[sub(h, 0, 2)]) state = btn_states.tap
+
+    -- a "hold" is a down that lasts for 6 frames (~0.2s running at 30fps)
+    local did_hold = hold[sub(h, 0, 6)]
+    local was_held = btn(btn_id, player_id) and sub(h, 0, 1) == "" .. btn_states.hold
+    if (did_hold or was_held) state = btn_states.hold
+
+    -- a "tap and hold" is a tap followed almost immediately by a hold
+    local did_tap_and_hold = tap_and_holds[sub(h, 0, 6)]
+    local was_tap_and_held = btn(btn_id, player_id) and sub(h, 0, 1) == "" .. btn_states.tap_and_hold
+    if (did_tap_and_hold or was_tap_and_held) state = btn_states.tap_and_hold
+
+    -- a "double tap" is two taps in rapid succession
+    if (dbl_taps[sub(h, 0, 6)]) state = btn_states.dbl_tap
+
+    -- a "double tap and hold" is a double tap followed almost immediately by a hold
+    local did_dbl_tap_and_hold = dbl_tap_and_holds[sub(h, 0, 6)]
+    local was_dbl_tap_and_held = btn(btn_id, player_id) and sub(h, 0, 1) == "" .. btn_states.dbl_tap_and_hold
+    if (did_dbl_tap_and_hold or was_dbl_tap_and_held) state = btn_states.dbl_tap_and_hold
+
+    push_state(btn_id, state)
   end
-end
-
-function get_btn_state(btn_id, player_id)
-  local did_press = btn_time[left].curr != 0
-  local did_press_before = btn_time[left].prev != 0
-  local did_press_recently = btn_time[left].curr - btn_time[left].prev < 0.2
-
-  if btn(btn_id, player_id) then
-    -- button is currently down
-  else
-  end
-end
-
-function get_btn_states()
-  for btn_id in all(btn_ids) do
-    get_btn_state(btn_id, 0)
-  end
-end
-
-function btns()
-  get_btn_times()
-  get_btn_states()
 end
 
 function _init()
-
 end
 
 function _update()
-  btns()
-
+  query_btns(0)
 end
 
 function _draw()
   cls(light_gray)
   print(time(), 1, 1, black)
+
+  for i,btn_id in pairs(btn_ids) do
+    print(btns[btn_id].state .. ": " .. btns[btn_id].history, 1, i * 9, black)
+  end
 end
