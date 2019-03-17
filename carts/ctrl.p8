@@ -24,54 +24,52 @@ btn_states = {
   dbl_tap_and_hold = 6,
 }
 
-state_labels = {}
-state_labels[btn_states.up] = "up"
-state_labels[btn_states.down] = "down"
-state_labels[btn_states.tap] = "tap"
-state_labels[btn_states.hold] = "hold"
-state_labels[btn_states.tap_and_hold] = "tap and hold"
-state_labels[btn_states.dbl_tap] = "double tap"
-state_labels[btn_states.dbl_tap_and_hold] = "double tap and hold"
+state_labels = {
+  [btn_states.up] = "up",
+  [btn_states.down] = "down",
+  [btn_states.tap] = "tap",
+  [btn_states.hold] = "hold",
+  [btn_states.tap_and_hold] = "tap and hold",
+  [btn_states.dbl_tap] = "double tap",
+  [btn_states.dbl_tap_and_hold] = "double tap and hold",
+}
 
-btns = {}
-btns[left]  = { label = "\x8b", state = btn_states.up, history = "" }
-btns[right] = { label = "\x91", state = btn_states.up, history = "" }
-btns[up]    = { label = "\x94", state = btn_states.up, history = "" }
-btns[down]  = { label = "\x83", state = btn_states.up, history = "" }
-btns[fire1] = { label = "\x8e", state = btn_states.up, history = "" }
-btns[fire2] = { label = "\x97", state = btn_states.up, history = "" }
+btns = {
+  [left]  = { label = "\x8b", state = btn_states.up, history = "" },
+  [right] = { label = "\x91", state = btn_states.up, history = "" },
+  [up]    = { label = "\x94", state = btn_states.up, history = "" },
+  [down]  = { label = "\x83", state = btn_states.up, history = "" },
+  [fire1] = { label = "\x8e", state = btn_states.up, history = "" },
+  [fire2] = { label = "\x97", state = btn_states.up, history = "" },
+}
 
-tap = {}
-tap["01"] = true
+tap = { ["01"] = true }
+hold = { ["111111"] = true }
 
-hold = {}
-hold["111111"] = true
+tap_and_holds = {
+  ["111112"] = true,
+  ["111102"] = true,
+}
 
-tap_and_holds = {}
-tap_and_holds["111112"] = true
-tap_and_holds["111102"] = true
+dbl_taps = {
+  ["201201"] = true,
+  ["201120"] = true,
+  ["201102"] = true,
+  ["201112"] = true,
+}
 
-dbl_taps = {}
-dbl_taps["201201"] = true
-dbl_taps["201120"] = true
-dbl_taps["201102"] = true
-dbl_taps["201112"] = true
+dbl_tap_and_holds = {
+  ["111115"] = true,
+  ["111105"] = true,
+}
 
-dbl_tap_and_holds = {}
-dbl_tap_and_holds["111115"] = true
-dbl_tap_and_holds["111105"] = true
+strs = {}
 
--- something for later
--- if (costatus(co) != "dead") coresume(co)
--- if (btn(right, 0)) coresume(co, true)
-co = cocreate(function(die)
-  while true do
-    die = yield()
-    if (die) return
-
-    print("hi", 64, 64, black)
+function init_strs()
+  for btn_id in all(btn_ids) do
+    strs[btn_id + 1] = { duration = 0, state = 0 }
   end
-end)
+end
 
 function push_state(btn_id, btn_state)
   btns[btn_id].history = btns[btn_id].state .. btns[btn_id].history
@@ -115,30 +113,50 @@ function query_btns(player_id)
   end
 end
 
-cooling = {}
-
-function _init()
-end
-
-function _update()
-  query_btns(0)
-end
-
-function _draw()
-  cls(light_gray)
-  -- print(time(), 1, 1, black)
-
+function build_strs()
   for i,btn_id in pairs(btn_ids) do
     local state = btns[btn_id].state
     local btn_label = btns[btn_id].label
     local state_label = state_labels[state]
+
     local color = state
-
     if (state == light_gray) color = state + 1
-    print(btn_label .. ": " .. state_label, 1, i * 9, color)
-  end
 
-  for co in all(cooling) do
-    if (not coresume(co)) del(cooling, co)
+    local duration = 1
+    if (state == btn_states.tap or state == btn_states.dbl_tap) duration = 12
+
+    local str = {
+      text = btn_label .. ": " .. state_label,
+      x = 0,
+      y = (i - 1) * 9,
+      color = color,
+      duration = duration,
+      state = state
+    }
+
+    local has_cooled = strs[btn_id + 1].duration <= 0
+    local is_override = state > strs[btn_id + 1].state
+    if (has_cooled or is_override) strs[btn_id + 1] = str
   end
+end
+
+function draw_strs(x, y)
+  for str in all(strs) do
+    str.duration -= 1
+    print(str.text, x + str.x, y + str.y, str.color)
+  end
+end
+
+function _init()
+  init_strs()
+end
+
+function _update()
+  query_btns(0)
+  build_strs()
+end
+
+function _draw()
+  cls(light_gray)
+  draw_strs(32, 36)
 end
