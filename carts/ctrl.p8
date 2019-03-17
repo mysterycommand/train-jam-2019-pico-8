@@ -24,13 +24,22 @@ btn_states = {
   dbl_tap_and_hold = 6,
 }
 
+state_labels = {}
+state_labels[btn_states.up] = "up"
+state_labels[btn_states.down] = "down"
+state_labels[btn_states.tap] = "tap"
+state_labels[btn_states.hold] = "hold"
+state_labels[btn_states.tap_and_hold] = "tap and hold"
+state_labels[btn_states.dbl_tap] = "double tap"
+state_labels[btn_states.dbl_tap_and_hold] = "double tap and hold"
+
 btns = {}
-btns[left]  = { state = btn_states.up, history = "" }
-btns[right] = { state = btn_states.up, history = "" }
-btns[up]    = { state = btn_states.up, history = "" }
-btns[down]  = { state = btn_states.up, history = "" }
-btns[fire1] = { state = btn_states.up, history = "" }
-btns[fire2] = { state = btn_states.up, history = "" }
+btns[left]  = { label = "\x8b", state = btn_states.up, history = "" }
+btns[right] = { label = "\x91", state = btn_states.up, history = "" }
+btns[up]    = { label = "\x94", state = btn_states.up, history = "" }
+btns[down]  = { label = "\x83", state = btn_states.up, history = "" }
+btns[fire1] = { label = "\x8e", state = btn_states.up, history = "" }
+btns[fire2] = { label = "\x97", state = btn_states.up, history = "" }
 
 tap = {}
 tap["01"] = true
@@ -106,6 +115,8 @@ function query_btns(player_id)
   end
 end
 
+cooling = {}
+
 function _init()
 end
 
@@ -115,9 +126,19 @@ end
 
 function _draw()
   cls(light_gray)
-  print(time(), 1, 1, black)
+  -- print(time(), 1, 1, black)
 
   for i,btn_id in pairs(btn_ids) do
-    print(btns[btn_id].state .. ": " .. btns[btn_id].history, 1, i * 9, black)
+    local state = btns[btn_id].state
+    local btn_label = btns[btn_id].label
+    local state_label = state_labels[state]
+    local color = state
+
+    if (state == light_gray) color = state + 1
+    print(btn_label .. ": " .. state_label, 1, i * 9, color)
+  end
+
+  for co in all(cooling) do
+    if (not coresume(co)) del(cooling, co)
   end
 end
